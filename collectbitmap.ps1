@@ -54,8 +54,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ################################################################
 # bitmap collector
 ################################
-# 2020/10/25 release
-# 2018/03/22 first release
+# 2020/10/26
 ################################################################
 
 param($SaveFolder)
