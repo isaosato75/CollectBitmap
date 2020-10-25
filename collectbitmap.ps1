@@ -6,7 +6,7 @@
 画像の保存先は、既定ではスクリプト ファイルと同じフォルダーに保存されます。スクリプト実行時の引数で指定するか、XML 設定ファイルで保存先を指定できます。XML 設定ファイルについては、-Full を指定してヘルプを表示してください。
 
 「テキスト」と「画像」の両方を含むデータがコピーされたときは、保存しません。
-例えば Excel でセルをコピーしたとき、セルとテキストの描かれた図がコピーされますが、同時に書式付きテキストや書式なしテキスト、Excel 形式のセル参照などもコピーされ、貼り付けする側はそれぞれの形式のデータを取り出することができます。
+例えば Excel でセルをコピーしたとき、テキストの描かれた図がコピーされますが、同時に書式付きテキストや書式なしテキスト、Excel 形式のセル参照などもコピーされ、貼り付けする側はそれぞれの形式のデータを取り出することができます。
 このように、「画像」と「テキスト」の両方を含む情報は保存しません。
 また、ベクトル図（メタファイル形式）も保存しません。
 
@@ -18,13 +18,13 @@ PS> @{
 >> Printing       = $true
 >> PrintingFont   = 'Consolas'
 >> PrintingSize   = 75
->> PrintingString = {"{1:yyyy/MM/dd HH:mm:ss.ff}`r`n{0}" -f $env:COMPUTERNAME, (Get-Date)}
+>> PrintingString = {"{1:d} {1:HH:mm:ss.ff}`r`n{0}" -f $env:COMPUTERNAME, (Get-Date)}
 >> } | Export-CliXml collectbitmap.ps1xml
 SavePath には保存先フォルダーを返すスクリプト ブロックを指定します。これは起動時に一度だけ評価されます。
 FileName には保存する画像ファイル名を返すスクリプト ブロックを指定します。これは図を保存する毎に評価されます。
 いずれかの値を省略することもできます。省略した値はスクリプトの規定値が用いられます。
 .NOTES
-Bitmap collector version 1.01
+Bitmap collector version 1.02
 
 MIT License
 
@@ -409,7 +409,7 @@ if($xconf['FileName'] -eq $null) {
 }
 
 if($xconf['PrintingString'] -eq $null) {
-    $xconf['PrintingString'] = {"{1:yyyy/MM/dd HH:mm:ss.ff}`r`n{0}" -f $env:COMPUTERNAME, (Get-Date)}
+    $xconf['PrintingString'] = {"{1:d} {1:HH:mm:ss.ff}`r`n{0}" -f $env:COMPUTERNAME, (Get-Date)}
 }
 
 if($xconf['PrintingFont'] -eq $null) {
