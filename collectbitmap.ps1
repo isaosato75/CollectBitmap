@@ -24,7 +24,7 @@ SavePath には保存先フォルダーを返すスクリプト ブロックを指定します。これは起動時
 FileName には保存する画像ファイル名を返すスクリプト ブロックを指定します。これは図を保存する毎に評価されます。
 いずれかの値を省略することもできます。省略した値はスクリプトの規定値が用いられます。
 .NOTES
-Bitmap collector version 1.00
+Bitmap collector version 1.01
 
 MIT License
 
