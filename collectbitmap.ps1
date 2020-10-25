@@ -14,7 +14,7 @@ collectbitmap.ps1xml ファイルを作成し、動作をカスタマイズできます。
 PS1XML 定義ファイルは、例えば次の要領で作成できます。
 PS> @{
 >> SavePath = {Split-Path $me -Parent}
->> FileName = {'{0}_{1:yyyyMMdd-HHmmssff}.png' -f $env:COMPUTERNAME, (Get-Date)}
+>> FileName = {'{1:yyyyMMdd_HHmmssff}_{0}.png' -f $env:COMPUTERNAME, (Get-Date)}
 >> Printing       = $true
 >> PrintingFont   = 'Consolas'
 >> PrintingSize   = 75
