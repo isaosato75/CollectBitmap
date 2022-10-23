@@ -14,11 +14,11 @@ collectbitmap.ps1xml ファイルを作成し、動作をカスタマイズできます。
 PS1XML 定義ファイルは、例えば次の要領で作成できます。
 PS> @{
 >> SavePath = {Split-Path $me -Parent}
->> FileName = {'{1:yyyyMMdd_HHmmssff}_{0}.png' -f $env:COMPUTERNAME, (Get-Date)}
+>> FileName = {'{1:yyyyMMdd_HHmmssff}_{0}.png' -f $env:COMPUTERNAME, $captureddatetime}
 >> Printing       = $true
 >> PrintingFont   = 'Consolas'
 >> PrintingSize   = 75
->> PrintingString = {"{1:d} {1:HH:mm:ss.ff}`r`n{0}" -f $env:COMPUTERNAME, (Get-Date)}
+>> PrintingString = {"{1:d} {1:HH:mm:ss.ff}`r`n{0}" -f $env:COMPUTERNAME, $captureddatetime}
 >> } | Export-CliXml collectbitmap.ps1xml
 SavePath には保存先フォルダーを返すスクリプト ブロックを指定します。これは起動時に一度だけ評価されます。
 FileName には保存する画像ファイル名を返すスクリプト ブロックを指定します。これは図を保存する毎に評価されます。
@@ -28,7 +28,7 @@ Bitmap collector version 1.02
 
 MIT License
 
-Copyright (c) 2020 Isao Sato
+Copyright (c) 2020-2022 Isao Sato
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
@@ -144,17 +144,14 @@ filter Verify-ScriptExecution([Parameter(Mandatory=$true, ValueFromPipeline=$tru
 
 function private:Enter-BitmapCapture([System.Collections.Hashtable] $xconf) {
     
-    # creating a full path for saving pictures
-    
     function Get-SavePath
     {
+        # creating a full path for saving pictures
         Join-Path $xconf['SavePath'] (Invoke-Command ([scriptblock]::Create($xconf['FileName'])))
     }
 
-    # responsing to the event
-    
-    function Watch-Clipboard_OnClipboardChanged
-    {
+    function Save-ClipboardBitmap {
+        $captureddatetime = [datetime]::Now
         [System.Windows.Forms.IDataObject] $dt = [System.Windows.Forms.Clipboard]::GetDataObject()
         if($dt.GetDataPresent([System.Windows.Forms.DataFormats]::Bitmap) -and -not $dt.GetDataPresent([System.Windows.Forms.DataFormats]::Text) -and -not $dt.GetDataPresent([System.Windows.Forms.DataFormats]::MetafilePict))
         {
@@ -232,6 +229,13 @@ function private:Enter-BitmapCapture([System.Collections.Hashtable] $xconf) {
         }
     }
     
+    # responsing to the event
+    
+    function Watch-Clipboard_OnClipboardChanged
+    {
+        Save-ClipboardBitmap
+    }
+    
     # main
     
     $check = New-Object System.Windows.Forms.CheckBox
@@ -255,6 +259,7 @@ function private:Enter-BitmapCapture([System.Collections.Hashtable] $xconf) {
     $watcher = New-Object ClipboardWatcher
     $watcher.Text = "ビットマップ収集"
     $watcher.Controls.Add($pict)
+    Save-ClipboardBitmap
     $watcher.Add_ClipboardChanged(${function:Watch-Clipboard_OnClipboardChanged})
     
     [System.Windows.Forms.Application]::Run($watcher)
@@ -405,11 +410,11 @@ if($xconf['SavePath'] -eq $null) {
 }
 
 if($xconf['FileName'] -eq $null) {
-    $xconf['FileName'] = {'{1:yyyyMMdd_HHmmssff}_{0}.png' -f $env:COMPUTERNAME, (Get-Date)}
+    $xconf['FileName'] = {'{1:yyyyMMdd_HHmmssff}_{0}.png' -f $env:COMPUTERNAME, $captureddatetime}
 }
 
 if($xconf['PrintingString'] -eq $null) {
-    $xconf['PrintingString'] = {"{1:d} {1:HH:mm:ss.ff}`r`n{0}" -f $env:COMPUTERNAME, (Get-Date)}
+    $xconf['PrintingString'] = {"{1:d} {1:HH:mm:ss.ff}`r`n{0}" -f $env:COMPUTERNAME, $captureddatetime}
 }
 
 if($xconf['PrintingFont'] -eq $null) {
