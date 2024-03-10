@@ -121,6 +121,8 @@ filter Verify-ScriptExecution([Parameter(Mandatory=$true, ValueFromPipeline=$tru
         {$_ -eq [Microsoft.PowerShell.ExecutionPolicy]::RemoteSigned} {
             if(([uri] $LiteralPath).IsUnc) {
                 Verify-AuthenticodeSignature $LiteralPath -Force:$Force
+            } else {
+                $true
             }
         }
         {$_ -eq [Microsoft.PowerShell.ExecutionPolicy]::AllSigned} {
